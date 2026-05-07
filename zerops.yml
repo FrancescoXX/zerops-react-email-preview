@@ -6,7 +6,7 @@ zerops:
         - npm ci
         - npm run build
       deployFiles:
-        - out/
+        - out/~
       cache:
         - node_modules
     run:
