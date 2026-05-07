@@ -13,4 +13,4 @@ zerops:
       ports:
         - port: 3000
           httpSupport: true
-      start: npm run dev -- --hostname 0.0.0.0
+start: HOSTNAME=0.0.0.0 npm start
