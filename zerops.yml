@@ -1,16 +1,13 @@
 zerops:
-  - setup: app
+  - setup: web
     build:
       base: nodejs@22
       buildCommands:
         - npm ci
+        - npm run build
       deployFiles:
-        - ./
+        - out/
       cache:
         - node_modules
     run:
-      base: nodejs@22
-      ports:
-        - port: 3000
-          httpSupport: true
-start: HOSTNAME=0.0.0.0 npm start
+      base: static
