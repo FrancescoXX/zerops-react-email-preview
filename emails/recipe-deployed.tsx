@@ -85,7 +85,7 @@ export default function RecipeDeployedEmail() {
             <Heading style={styles.h2}>What’s next?</Heading>
 
             <Text style={styles.paragraph}>
-              Your environment is ready. Now choose how you want to continue.
+              Your environment is ready. Choose the path that fits your project best.
             </Text>
 
             <Section style={styles.optionCard}>
