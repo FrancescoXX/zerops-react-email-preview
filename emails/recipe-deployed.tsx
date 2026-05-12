@@ -25,7 +25,7 @@ const previewData = {
   userFirstName: "Francesco",
   recipeName: "nodejs-hello-world-small-prod",
   zeropsAppUrl: "https://app.zerops.io",
-  discordUrl: "https://discord.gg/zerops",
+  discordUrl: "https://discord.gg/zeropsio",
   buildPipelineDocsUrl: "https://docs.zerops.io/features/pipeline",
   publicAccessDocsUrl: "https://docs.zerops.io/features/access",
   logsDocsUrl: "https://docs.zerops.io/guides/logging",
