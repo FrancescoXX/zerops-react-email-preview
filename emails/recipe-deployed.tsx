@@ -7,6 +7,7 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Link,
   Preview,
   Row,
@@ -24,8 +25,10 @@ const previewData = {
   userFirstName: "Francesco",
   recipeName: "nodejs-hello-world-small-prod",
   zeropsAppUrl: "https://app.zerops.io",
-  recipeSourceUrl: "nodejs-hello-world-small-prod",
   discordUrl: "https://discord.gg/zerops",
+  buildPipelineDocsUrl: "https://docs.zerops.io/features/pipeline",
+  publicAccessDocsUrl: "https://docs.zerops.io/features/access",
+  logsDocsUrl: "https://docs.zerops.io/guides/logging",
   services: [
     {
       hostname: "app",
@@ -41,6 +44,18 @@ const previewData = {
       hostname: "db",
       type: "postgresql@18",
     },
+    {
+      hostname: "redis",
+      type: "valkey@7.2",
+    },
+    {
+      hostname: "queue",
+      type: "nodejs@22",
+    },
+    {
+      hostname: "scheduler",
+      type: "nodejs@22",
+    },
   ],
 };
 
@@ -50,29 +65,94 @@ export default function RecipeDeployedEmail() {
     recipeName,
     services,
     zeropsAppUrl,
-    recipeSourceUrl,
     discordUrl,
+    buildPipelineDocsUrl,
+    publicAccessDocsUrl,
+    logsDocsUrl,
   } = previewData;
 
-  const recipeDetailUrl = `${zeropsAppUrl}/recipes/${recipeSourceUrl}`;
-  const guideUrl = `${recipeDetailUrl}#next-steps`;
-  const templateUrl = `${recipeDetailUrl}?path=template`;
-  const integrateUrl = `${recipeDetailUrl}?path=integrate`;
+  const recipesUrl = `${zeropsAppUrl}/recipes`;
+  const templateGuideUrl = recipesUrl;
+  const integrationGuideUrl = recipesUrl;
+
+  const serviceRows = chunkServices(services, 2);
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <style>{`
+          @media only screen and (max-width: 600px) {
+            .container {
+              width: 100% !important;
+              max-width: 100% !important;
+              padding: 40px 20px !important;
+              box-sizing: border-box !important;
+            }
+
+            .hero-title {
+              font-size: 25px !important;
+              line-height: 32px !important;
+            }
+
+            .desktop-column {
+              display: block !important;
+              width: 100% !important;
+              max-width: 100% !important;
+              padding-left: 0 !important;
+              padding-right: 0 !important;
+              box-sizing: border-box !important;
+            }
+
+            .option-card {
+              height: auto !important;
+              margin-bottom: 14px !important;
+              box-sizing: border-box !important;
+            }
+
+            .option-title {
+              height: auto !important;
+            }
+
+            .option-body {
+              height: auto !important;
+            }
+
+            .service-card {
+              height: auto !important;
+              margin-bottom: 10px !important;
+              box-sizing: border-box !important;
+            }
+
+            .button {
+              display: block !important;
+              width: 100% !important;
+              box-sizing: border-box !important;
+            }
+          }
+        `}</style>
+      </Head>
+
       <Preview>
-        Your services are running. Choose whether to use the recipe as a template
-        or integrate your existing app.
+        Your services are running. Open the guide and choose how you want to
+        continue.
       </Preview>
 
       <Body style={styles.body}>
-        <Container style={styles.container}>
-          <Section style={styles.header}>
-            <Text style={styles.logo}>zerops</Text>
+        <Container className="container" style={styles.container}>
+          <Section style={styles.logoSection}>
+            <Link href="https://zerops.io" style={styles.logoLink}>
+              <Img
+                src="/static/zerops-logo.svg"
+                width="22"
+                height="22"
+                alt="Zerops"
+                style={styles.logoIcon}
+              />
+            </Link>
+          </Section>
 
-            <Heading style={styles.h1}>
+          <Section style={styles.heroSection}>
+            <Heading className="hero-title" style={styles.h1}>
               Your recipe{" "}
               <span style={styles.highlight}>{recipeName}</span> is live!
             </Heading>
@@ -84,37 +164,34 @@ export default function RecipeDeployedEmail() {
           </Section>
 
           <Section style={styles.section}>
-            <Heading style={styles.h2}>Deployed services</Heading>
-
-            {services.map((service) => (
-              <ServiceRow key={service.hostname} service={service} />
-            ))}
-          </Section>
-
-          <Section style={styles.section}>
             <Heading style={styles.h2}>What’s next?</Heading>
 
             <Text style={styles.paragraph}>
-              Your environment is ready. Choose how you want to continue.
+              Choose how you want to continue. Both paths will take you back to
+              the recipes guide.
             </Text>
 
             <Row>
-              <Column style={styles.optionColumnLeft}>
-                <Section style={styles.optionCard}>
+              <Column className="desktop-column" style={styles.optionColumnLeft}>
+                <Section className="option-card" style={styles.optionCard}>
                   <Text style={styles.optionLabel}>A</Text>
 
-                  <Text style={styles.optionTitle}>
+                  <Text className="option-title" style={styles.optionTitle}>
                     Use this recipe as a template
                   </Text>
 
-                  <Text style={styles.optionBodyFixed}>
+                  <Text className="option-body" style={styles.optionBodyFixed}>
                     Start from the deployed setup, clone the template
                     repositories, and use this recipe as the foundation for your
                     own project.
                   </Text>
 
-                  <Button href={templateUrl} style={styles.optionButton}>
-                    Use as template
+                  <Button
+                    className="button"
+                    href={templateGuideUrl}
+                    style={styles.optionButton}
+                  >
+                    View template guide
                   </Button>
 
                   <Text style={styles.optionHelper}>
@@ -123,21 +200,25 @@ export default function RecipeDeployedEmail() {
                 </Section>
               </Column>
 
-              <Column style={styles.optionColumnRight}>
-                <Section style={styles.optionCard}>
+              <Column className="desktop-column" style={styles.optionColumnRight}>
+                <Section className="option-card" style={styles.optionCard}>
                   <Text style={styles.optionLabel}>B</Text>
 
-                  <Text style={styles.optionTitle}>
+                  <Text className="option-title" style={styles.optionTitle}>
                     Integrate your existing app
                   </Text>
 
-                  <Text style={styles.optionBodyFixed}>
+                  <Text className="option-body" style={styles.optionBodyFixed}>
                     Connect your own application or repository to the
                     infrastructure created by this recipe.
                   </Text>
 
-                  <Button href={integrateUrl} style={styles.optionButton}>
-                    Integrate app
+                  <Button
+                    className="button"
+                    href={integrationGuideUrl}
+                    style={styles.optionButton}
+                  >
+                    View integration guide
                   </Button>
 
                   <Text style={styles.optionHelper}>
@@ -149,36 +230,68 @@ export default function RecipeDeployedEmail() {
           </Section>
 
           <Section style={styles.section}>
+            <Heading style={styles.h2}>Deployed services</Heading>
+
+            {serviceRows.map((row, rowIndex) => (
+              <Row key={`service-row-${rowIndex}`}>
+                {row.map((service, serviceIndex) => (
+                  <Column
+                    key={service.hostname}
+                    className="desktop-column"
+                    style={
+                      serviceIndex === 0
+                        ? styles.serviceColumnLeft
+                        : styles.serviceColumnRight
+                    }
+                  >
+                    <ServiceCard service={service} />
+                  </Column>
+                ))}
+              </Row>
+            ))}
+          </Section>
+
+          <Section style={styles.section}>
             <Heading style={styles.h2}>Need help?</Heading>
 
             <Section style={styles.faqCard}>
-              <Text style={styles.faqTitle}>
-                How do I connect my repository?
-              </Text>
+              <Text style={styles.faqTitle}>Where should I continue?</Text>
 
               <Text style={styles.faqBody}>
-                Follow the guide for this recipe. It will walk you through the
-                next steps for your selected environment.
+                Open the recipes page and follow the path that matches what you
+                want to do next: use the deployed setup as a template or
+                integrate your existing application.
               </Text>
 
-              <Link href={guideUrl} style={styles.textLink}>
-                Open guide ↗
+              <Link href={recipesUrl} style={styles.textLink}>
+                Open recipes ↗
               </Link>
             </Section>
 
             <Section style={styles.faqCard}>
               <Text style={styles.faqTitle}>
-                Where do I manage domains, deploys, and services?
+                Looking for deploys, public access, or logs?
               </Text>
 
               <Text style={styles.faqBody}>
-                Open the recipe detail in Zerops to manage services,
-                deployments, environment variables, domains, and runtime
-                settings.
+                Check the Zerops docs for build and deploy pipelines, public
+                access, and runtime logs.
               </Text>
 
-              <Link href={recipeDetailUrl} style={styles.textLink}>
-                Open recipe detail ↗
+              <Link href={buildPipelineDocsUrl} style={styles.textLink}>
+                Build & deploy ↗
+              </Link>
+
+              <Text style={styles.inlineSeparator}> · </Text>
+
+              <Link href={publicAccessDocsUrl} style={styles.textLink}>
+                Public access ↗
+              </Link>
+
+              <Text style={styles.inlineSeparator}> · </Text>
+
+              <Link href={logsDocsUrl} style={styles.textLink}>
+                Logs ↗
               </Link>
             </Section>
           </Section>
@@ -225,25 +338,29 @@ export default function RecipeDeployedEmail() {
   );
 }
 
-function ServiceRow({ service }: { service: Service }) {
+function ServiceCard({ service }: { service: Service }) {
   return (
-    <Section style={styles.serviceRow}>
-      <Row>
-        <Column>
-          <Text style={styles.serviceName}>{service.hostname}</Text>
-          <Text style={styles.serviceType}>{service.type}</Text>
-        </Column>
+    <Section className="service-card" style={styles.serviceCard}>
+      <Text style={styles.serviceName}>{service.hostname}</Text>
+      <Text style={styles.serviceType}>{service.type}</Text>
 
-        {service.subdomainUrl ? (
-          <Column style={styles.serviceButtonColumn}>
-            <Button href={service.subdomainUrl} style={styles.secondaryButton}>
-              Open app
-            </Button>
-          </Column>
-        ) : null}
-      </Row>
+      {service.subdomainUrl ? (
+        <Link href={service.subdomainUrl} style={styles.serviceLink}>
+          Open app
+        </Link>
+      ) : null}
     </Section>
   );
+}
+
+function chunkServices(services: Service[], size: number) {
+  const rows: Service[][] = [];
+
+  for (let index = 0; index < services.length; index += size) {
+    rows.push(services.slice(index, index + size));
+  }
+
+  return rows;
 }
 
 const styles = {
@@ -255,21 +372,33 @@ const styles = {
   },
 
   container: {
-    maxWidth: "560px",
+    width: "100%",
+    maxWidth: "580px",
     margin: "0 auto",
-    padding: "44px 24px",
+    padding: "56px 28px 44px",
+    boxSizing: "border-box" as const,
   },
 
-  header: {
-    padding: "24px 0 40px",
+  logoSection: {
+    width: "100%",
+    margin: "0 0 52px",
+    textAlign: "center" as const,
   },
 
-  logo: {
-    margin: "0 0 56px",
-    color: "#00c7b7",
-    fontSize: "14px",
-    lineHeight: "20px",
-    fontWeight: "800",
+  logoLink: {
+    display: "block",
+    width: "100%",
+    textAlign: "center" as const,
+    textDecoration: "none",
+  },
+
+  logoIcon: {
+    display: "block",
+    margin: "0 auto",
+  },
+
+  heroSection: {
+    margin: "0 0 42px",
   },
 
   h1: {
@@ -277,13 +406,13 @@ const styles = {
     color: "#164742",
     fontSize: "30px",
     lineHeight: "39px",
-    fontWeight: "500",
-    letterSpacing: "-0.4px",
+    fontWeight: "600",
+    letterSpacing: "-0.5px",
   },
 
   highlight: {
     color: "#00c7b7",
-    fontWeight: "700",
+    fontWeight: "800",
   },
 
   intro: {
@@ -294,104 +423,67 @@ const styles = {
   },
 
   section: {
-    margin: "0 0 44px",
+    margin: "0 0 46px",
   },
 
   h2: {
-    margin: "0 0 16px",
+    margin: "0 0 14px",
     color: "#164742",
     fontSize: "18px",
     lineHeight: "26px",
-    fontWeight: "500",
-  },
-
-  paragraph: {
-    margin: "0 0 20px",
-    color: "#315f58",
-    fontSize: "14px",
-    lineHeight: "22px",
-  },
-
-  serviceRow: {
-    margin: "0 0 10px",
-    padding: "14px 16px",
-    borderRadius: "10px",
-    backgroundColor: "#ffffff",
-  },
-
-  serviceName: {
-    margin: "0",
-    color: "#164742",
-    fontSize: "14px",
-    lineHeight: "20px",
     fontWeight: "700",
   },
 
-  serviceType: {
-    margin: "2px 0 0",
-    color: "#789590",
-    fontSize: "12px",
-    lineHeight: "18px",
-    fontFamily: "monospace",
-  },
-
-  serviceButtonColumn: {
-    width: "110px",
-    textAlign: "right" as const,
-  },
-
-  secondaryButton: {
-    padding: "8px 10px",
-    borderRadius: "6px",
-    backgroundColor: "#ffffff",
-    color: "#00a99a",
-    fontSize: "11px",
-    fontWeight: "800",
-    letterSpacing: "0.8px",
-    textTransform: "uppercase" as const,
-    textDecoration: "none",
+  paragraph: {
+    margin: "0 0 22px",
+    color: "#315f58",
+    fontSize: "14px",
+    lineHeight: "22px",
   },
 
   optionColumnLeft: {
     width: "50%",
     paddingRight: "8px",
     verticalAlign: "top" as const,
+    boxSizing: "border-box" as const,
   },
 
   optionColumnRight: {
     width: "50%",
     paddingLeft: "8px",
     verticalAlign: "top" as const,
+    boxSizing: "border-box" as const,
   },
 
   optionCard: {
-    height: "260px",
-    padding: "18px",
-    borderRadius: "10px",
+    height: "270px",
+    padding: "20px",
+    borderRadius: "12px",
     backgroundColor: "#ffffff",
     verticalAlign: "top" as const,
+    boxSizing: "border-box" as const,
   },
 
   optionLabel: {
-    margin: "0 0 8px",
+    margin: "0 0 10px",
     color: "#00c7b7",
-    fontSize: "20px",
-    lineHeight: "24px",
-    fontWeight: "800",
+    fontSize: "22px",
+    lineHeight: "26px",
+    fontWeight: "900",
     textAlign: "right" as const,
   },
 
   optionTitle: {
     height: "42px",
-    margin: "0 0 10px",
+    margin: "0 0 12px",
     color: "#164742",
     fontSize: "15px",
     lineHeight: "21px",
-    fontWeight: "700",
+    fontWeight: "800",
   },
 
   optionBodyFixed: {
-    height: "90px",
+    height: "88px",
     margin: "0 0 18px",
     color: "#315f58",
     fontSize: "12px",
@@ -400,14 +492,14 @@ const styles = {
 
   optionButton: {
     width: "100%",
-    padding: "11px 0",
-    borderRadius: "4px",
+    padding: "12px 0",
+    borderRadius: "5px",
     backgroundColor: "#00c7b7",
     color: "#ffffff",
-    fontSize: "11px",
+    fontSize: "10px",
     lineHeight: "16px",
-    fontWeight: "800",
-    letterSpacing: "1px",
+    fontWeight: "900",
+    letterSpacing: "0.8px",
     textTransform: "uppercase" as const,
     textAlign: "center" as const,
     textDecoration: "none",
@@ -420,11 +512,62 @@ const styles = {
     lineHeight: "15px",
   },
 
-  faqCard: {
-    margin: "0 0 12px",
-    padding: "18px",
+  serviceColumnLeft: {
+    width: "50%",
+    paddingRight: "6px",
+    paddingBottom: "12px",
+    verticalAlign: "top" as const,
+    boxSizing: "border-box" as const,
+  },
+
+  serviceColumnRight: {
+    width: "50%",
+    paddingLeft: "6px",
+    paddingBottom: "12px",
+    verticalAlign: "top" as const,
+    boxSizing: "border-box" as const,
+  },
+
+  serviceCard: {
+    height: "78px",
+    padding: "14px 16px",
     borderRadius: "10px",
     backgroundColor: "#ffffff",
+    boxSizing: "border-box" as const,
+  },
+
+  serviceName: {
+    margin: "0",
+    color: "#164742",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: "800",
+  },
+
+  serviceType: {
+    margin: "2px 0 8px",
+    color: "#789590",
+    fontSize: "12px",
+    lineHeight: "18px",
+    fontFamily: "monospace",
+  },
+
+  serviceLink: {
+    color: "#00a99a",
+    fontSize: "10px",
+    lineHeight: "15px",
+    fontWeight: "900",
+    letterSpacing: "0.8px",
+    textTransform: "uppercase" as const,
+    textDecoration: "none",
+  },
+
+  faqCard: {
+    margin: "0 0 12px",
+    padding: "20px",
+    borderRadius: "12px",
+    backgroundColor: "#ffffff",
+    boxSizing: "border-box" as const,
   },
 
   faqTitle: {
@@ -432,7 +575,7 @@ const styles = {
     color: "#164742",
     fontSize: "15px",
     lineHeight: "21px",
-    fontWeight: "700",
+    fontWeight: "800",
   },
 
   faqBody: {
@@ -446,14 +589,22 @@ const styles = {
     color: "#00a99a",
     fontSize: "11px",
     lineHeight: "16px",
-    fontWeight: "800",
+    fontWeight: "900",
     letterSpacing: "0.8px",
     textTransform: "uppercase" as const,
     textDecoration: "none",
   },
 
+  inlineSeparator: {
+    display: "inline",
+    margin: "0",
+    color: "#789590",
+    fontSize: "11px",
+    lineHeight: "16px",
+  },
+
   discordSection: {
-    margin: "44px 0",
+    margin: "48px 0 42px",
     textAlign: "center" as const,
   },
 
@@ -466,7 +617,7 @@ const styles = {
 
   discordLink: {
     color: "#00a99a",
-    fontWeight: "700",
+    fontWeight: "800",
     textDecoration: "underline",
   },
 
