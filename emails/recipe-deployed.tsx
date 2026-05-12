@@ -25,11 +25,17 @@ const previewData = {
   recipeName: "nodejs-hello-world-small-prod",
   zeropsAppUrl: "https://app.zerops.io",
   recipeSourceUrl: "nodejs-hello-world-small-prod",
+  discordUrl: "https://discord.gg/zerops",
   services: [
     {
       hostname: "app",
       type: "nodejs@22",
       subdomainUrl: "https://example.zerops.app",
+    },
+    {
+      hostname: "worker",
+      type: "nodejs@22",
+      subdomainUrl: "https://example-worker.zerops.app",
     },
     {
       hostname: "db",
@@ -45,34 +51,39 @@ export default function RecipeDeployedEmail() {
     services,
     zeropsAppUrl,
     recipeSourceUrl,
+    discordUrl,
   } = previewData;
 
-  const nextStepsUrl = `${zeropsAppUrl}/recipes/${recipeSourceUrl}#next-steps`;
+  const recipeDetailUrl = `${zeropsAppUrl}/recipes/${recipeSourceUrl}`;
+  const guideUrl = `${recipeDetailUrl}#next-steps`;
+  const templateUrl = `${recipeDetailUrl}?path=template`;
+  const integrateUrl = `${recipeDetailUrl}?path=integrate`;
 
   return (
     <Html>
       <Head />
-      <Preview>Your Zerops recipe {recipeName} is live</Preview>
+      <Preview>
+        Your services are running. Choose whether to use the recipe as a template
+        or integrate your existing app.
+      </Preview>
 
       <Body style={styles.body}>
         <Container style={styles.container}>
           <Section style={styles.header}>
-            <Text style={styles.logo}>Zerops</Text>
-            <Text style={styles.eyebrow}>Recipe deployed</Text>
+            <Text style={styles.logo}>zerops</Text>
 
             <Heading style={styles.h1}>
-              Your recipe <span style={styles.highlight}>{recipeName}</span> is
-              live! 🚀
+              Your recipe{" "}
+              <span style={styles.highlight}>{recipeName}</span> is live!
             </Heading>
 
             <Text style={styles.intro}>
-              Hey {userFirstName}, your Zerops recipe has been successfully
-              deployed and all services are up and running.
+              Hey {userFirstName}, your Zerops recipe has finished deploying and
+              your services are now running.
             </Text>
           </Section>
 
-          <Section style={styles.card}>
-            <Text style={styles.cardEyebrow}>Running now</Text>
+          <Section style={styles.section}>
             <Heading style={styles.h2}>Deployed services</Heading>
 
             {services.map((service) => (
@@ -80,78 +91,133 @@ export default function RecipeDeployedEmail() {
             ))}
           </Section>
 
-          <Section style={styles.card}>
-            <Text style={styles.cardEyebrow}>Next steps</Text>
+          <Section style={styles.section}>
             <Heading style={styles.h2}>What’s next?</Heading>
 
             <Text style={styles.paragraph}>
-              Your environment is ready. Choose the path that fits your project best.
+              Your environment is ready. Choose how you want to continue.
             </Text>
 
-            <Section style={styles.optionCard}>
-              <Text style={styles.optionNumber}>1</Text>
-              <Text style={styles.optionTitle}>
-                Use this recipe as a template
+            <Row>
+              <Column style={styles.optionColumnLeft}>
+                <Section style={styles.optionCard}>
+                  <Text style={styles.optionLabel}>A</Text>
+
+                  <Text style={styles.optionTitle}>
+                    Use this recipe as a template
+                  </Text>
+
+                  <Text style={styles.optionBodyFixed}>
+                    Start from the deployed setup, clone the template
+                    repositories, and use this recipe as the foundation for your
+                    own project.
+                  </Text>
+
+                  <Button href={templateUrl} style={styles.optionButton}>
+                    Use as template
+                  </Button>
+
+                  <Text style={styles.optionHelper}>
+                    Best if you want to start from this recipe.
+                  </Text>
+                </Section>
+              </Column>
+
+              <Column style={styles.optionColumnRight}>
+                <Section style={styles.optionCard}>
+                  <Text style={styles.optionLabel}>B</Text>
+
+                  <Text style={styles.optionTitle}>
+                    Integrate your existing app
+                  </Text>
+
+                  <Text style={styles.optionBodyFixed}>
+                    Connect your own application or repository to the
+                    infrastructure created by this recipe.
+                  </Text>
+
+                  <Button href={integrateUrl} style={styles.optionButton}>
+                    Integrate app
+                  </Button>
+
+                  <Text style={styles.optionHelper}>
+                    Best if you already have an app and want to run it on Zerops.
+                  </Text>
+                </Section>
+              </Column>
+            </Row>
+          </Section>
+
+          <Section style={styles.section}>
+            <Heading style={styles.h2}>Need help?</Heading>
+
+            <Section style={styles.faqCard}>
+              <Text style={styles.faqTitle}>
+                How do I connect my repository?
               </Text>
-              <Text style={styles.paragraph}>
-                Start from the deployed recipe, clone the template repositories,
-                and use the full setup as the foundation for your project.
+
+              <Text style={styles.faqBody}>
+                Follow the guide for this recipe. It will walk you through the
+                next steps for your selected environment.
               </Text>
-              <Text style={styles.muted}>
-                Best if you want to create a new app from this recipe.
-              </Text>
+
+              <Link href={guideUrl} style={styles.textLink}>
+                Open guide ↗
+              </Link>
             </Section>
 
-            <Section style={styles.optionCard}>
-              <Text style={styles.optionNumber}>2</Text>
-              <Text style={styles.optionTitle}>
-                Integrate with your existing app
+            <Section style={styles.faqCard}>
+              <Text style={styles.faqTitle}>
+                Where do I manage domains, deploys, and services?
               </Text>
-              <Text style={styles.paragraph}>
-                Connect your own application or repository to the Zerops setup
-                created by this recipe.
+
+              <Text style={styles.faqBody}>
+                Open the recipe detail in Zerops to manage services,
+                deployments, environment variables, domains, and runtime
+                settings.
               </Text>
-              <Text style={styles.muted}>
-                Best if you already have an app and want to run it on Zerops.
-              </Text>
+
+              <Link href={recipeDetailUrl} style={styles.textLink}>
+                Open recipe detail ↗
+              </Link>
             </Section>
+          </Section>
 
-            <Button href={nextStepsUrl} style={styles.primaryButton}>
-              Choose your next step
-            </Button>
-
-            <Text style={styles.helperText}>
-              The recipe guide will walk you through repository setup,
-              deployment configuration, domains, and optional production
-              settings.
+          <Section style={styles.discordSection}>
+            <Text style={styles.discordText}>
+              Need something else?
+              <br />
+              Join{" "}
+              <Link href={discordUrl} style={styles.discordLink}>
+                Zerops Discord
+              </Link>{" "}
+              and we’ll help you out.
             </Text>
           </Section>
 
-          <Section style={styles.card}>
-            <Text style={styles.cardEyebrow}>Need help</Text>
-            <Heading style={styles.h2}>Looking for GitHub setup?</Heading>
+          <Section style={styles.socialSection}>
+            <Link href="https://github.com/zeropsio" style={styles.socialLink}>
+              GitHub
+            </Link>
 
-            <Text style={styles.paragraph}>
-              If you want to continue with your own repository, open the recipe
-              guide and follow the integration path.
-            </Text>
+            <Link href="https://x.com/zeropsio" style={styles.socialLink}>
+              X
+            </Link>
 
-            <Text style={styles.paragraph}>
-              You’ll find the steps for connecting your app, setting up
-              deployments, and preparing the environment for your workflow.
-            </Text>
-
-            <Link href={nextStepsUrl} style={styles.textLink}>
-              Open the recipe guide
+            <Link
+              href="https://www.linkedin.com/company/zeropsio"
+              style={styles.socialLink}
+            >
+              LinkedIn
             </Link>
           </Section>
 
           <Hr style={styles.hr} />
 
           <Text style={styles.footer}>
-            Happy building,
+            © 2026 Zerops
             <br />
-            The Zerops team
+            zerops.io
           </Text>
         </Container>
       </Body>
@@ -163,10 +229,6 @@ function ServiceRow({ service }: { service: Service }) {
   return (
     <Section style={styles.serviceRow}>
       <Row>
-        <Column style={styles.serviceIconColumn}>
-          <Text style={styles.serviceIcon}>▦</Text>
-        </Column>
-
         <Column>
           <Text style={styles.serviceName}>{service.hostname}</Text>
           <Text style={styles.serviceType}>{service.type}</Text>
@@ -187,137 +249,89 @@ function ServiceRow({ service }: { service: Service }) {
 const styles = {
   body: {
     margin: "0",
-    backgroundColor: "#eef3f1",
+    backgroundColor: "#eeeeee",
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
   },
 
   container: {
-    maxWidth: "680px",
+    maxWidth: "560px",
     margin: "0 auto",
-    padding: "40px 24px",
+    padding: "44px 24px",
   },
 
   header: {
-    padding: "32px",
-    borderRadius: "24px",
-    backgroundColor: "#f8fbfa",
-    border: "1px solid #dbe9e6",
+    padding: "24px 0 40px",
   },
 
   logo: {
-    margin: "0 0 32px",
-    color: "#194b45",
-    fontSize: "18px",
+    margin: "0 0 56px",
+    color: "#00c7b7",
+    fontSize: "14px",
+    lineHeight: "20px",
     fontWeight: "800",
-  },
-
-  eyebrow: {
-    margin: "0 0 12px",
-    color: "#08a99a",
-    fontSize: "12px",
-    fontWeight: "800",
-    letterSpacing: "2.2px",
-    textTransform: "uppercase" as const,
   },
 
   h1: {
     margin: "0",
-    color: "#214f49",
-    fontSize: "34px",
-    lineHeight: "42px",
-    fontWeight: "800",
-    letterSpacing: "-0.8px",
+    color: "#164742",
+    fontSize: "30px",
+    lineHeight: "39px",
+    fontWeight: "500",
+    letterSpacing: "-0.4px",
   },
 
   highlight: {
-    color: "#102f2b",
+    color: "#00c7b7",
+    fontWeight: "700",
   },
 
   intro: {
     margin: "18px 0 0",
-    color: "#315f58",
-    fontSize: "16px",
-    lineHeight: "26px",
+    color: "#164742",
+    fontSize: "14px",
+    lineHeight: "22px",
   },
 
-  card: {
-    margin: "18px 0 0",
-    padding: "28px",
-    borderRadius: "20px",
-    backgroundColor: "#ffffff",
-    border: "1px solid #dbe9e6",
-  },
-
-  cardEyebrow: {
-    margin: "0 0 8px",
-    color: "#08a99a",
-    fontSize: "11px",
-    fontWeight: "800",
-    letterSpacing: "2px",
-    textTransform: "uppercase" as const,
+  section: {
+    margin: "0 0 44px",
   },
 
   h2: {
-    margin: "0 0 18px",
-    color: "#214f49",
-    fontSize: "24px",
-    lineHeight: "32px",
-    fontWeight: "800",
+    margin: "0 0 16px",
+    color: "#164742",
+    fontSize: "18px",
+    lineHeight: "26px",
+    fontWeight: "500",
   },
 
   paragraph: {
-    margin: "0 0 12px",
+    margin: "0 0 20px",
     color: "#315f58",
-    fontSize: "15px",
-    lineHeight: "24px",
-  },
-
-  muted: {
-    margin: "0",
-    color: "#789590",
     fontSize: "14px",
     lineHeight: "22px",
   },
 
   serviceRow: {
-    margin: "0 0 12px",
-    padding: "16px",
-    borderRadius: "14px",
-    backgroundColor: "#f3f8f7",
-    border: "1px solid #dbe9e6",
-  },
-
-  serviceIconColumn: {
-    width: "44px",
-  },
-
-  serviceIcon: {
-    width: "32px",
-    height: "32px",
-    lineHeight: "32px",
-    margin: "0",
-    borderRadius: "9px",
-    backgroundColor: "#d4efea",
-    color: "#08a99a",
-    fontSize: "18px",
-    fontWeight: "800",
-    textAlign: "center" as const,
+    margin: "0 0 10px",
+    padding: "14px 16px",
+    borderRadius: "10px",
+    backgroundColor: "#ffffff",
   },
 
   serviceName: {
     margin: "0",
-    color: "#174b45",
-    fontSize: "16px",
-    lineHeight: "22px",
-    fontWeight: "800",
+    color: "#164742",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: "700",
   },
 
   serviceType: {
-    margin: "3px 0 0",
+    margin: "2px 0 0",
     color: "#789590",
-    fontSize: "14px",
-    lineHeight: "20px",
+    fontSize: "12px",
+    lineHeight: "18px",
     fontFamily: "monospace",
   },
 
@@ -327,81 +341,156 @@ const styles = {
   },
 
   secondaryButton: {
-    padding: "9px 12px",
-    borderRadius: "8px",
-    backgroundColor: "#eef7f5",
-    color: "#174b45",
-    fontSize: "13px",
+    padding: "8px 10px",
+    borderRadius: "6px",
+    backgroundColor: "#ffffff",
+    color: "#00a99a",
+    fontSize: "11px",
     fontWeight: "800",
-    textDecoration: "none",
-    border: "1px solid #bfe3dd",
-  },
-
-  optionCard: {
-    margin: "16px 0 0",
-    padding: "20px",
-    borderRadius: "16px",
-    backgroundColor: "#f3f8f7",
-    border: "1px solid #dbe9e6",
-  },
-
-  optionNumber: {
-    width: "28px",
-    height: "28px",
-    lineHeight: "28px",
-    margin: "0 0 12px",
-    borderRadius: "999px",
-    backgroundColor: "#08c7b4",
-    color: "#ffffff",
-    fontSize: "14px",
-    fontWeight: "900",
-    textAlign: "center" as const,
-  },
-
-  optionTitle: {
-    margin: "0 0 8px",
-    color: "#174b45",
-    fontSize: "17px",
-    lineHeight: "24px",
-    fontWeight: "800",
-  },
-
-  primaryButton: {
-    marginTop: "22px",
-    padding: "14px 22px",
-    borderRadius: "10px",
-    backgroundColor: "#174b45",
-    color: "#ffffff",
-    fontSize: "14px",
-    fontWeight: "900",
-    letterSpacing: "1.2px",
+    letterSpacing: "0.8px",
     textTransform: "uppercase" as const,
     textDecoration: "none",
   },
 
-  helperText: {
-    margin: "18px 0 0",
+  optionColumnLeft: {
+    width: "50%",
+    paddingRight: "8px",
+    verticalAlign: "top" as const,
+  },
+
+  optionColumnRight: {
+    width: "50%",
+    paddingLeft: "8px",
+    verticalAlign: "top" as const,
+  },
+
+  optionCard: {
+    height: "260px",
+    padding: "18px",
+    borderRadius: "10px",
+    backgroundColor: "#ffffff",
+    verticalAlign: "top" as const,
+  },
+
+  optionLabel: {
+    margin: "0 0 8px",
+    color: "#00c7b7",
+    fontSize: "20px",
+    lineHeight: "24px",
+    fontWeight: "800",
+    textAlign: "right" as const,
+  },
+
+  optionTitle: {
+    height: "42px",
+    margin: "0 0 10px",
+    color: "#164742",
+    fontSize: "15px",
+    lineHeight: "21px",
+    fontWeight: "700",
+  },
+
+  optionBodyFixed: {
+    height: "90px",
+    margin: "0 0 18px",
+    color: "#315f58",
+    fontSize: "12px",
+    lineHeight: "18px",
+  },
+
+  optionButton: {
+    width: "100%",
+    padding: "11px 0",
+    borderRadius: "4px",
+    backgroundColor: "#00c7b7",
+    color: "#ffffff",
+    fontSize: "11px",
+    lineHeight: "16px",
+    fontWeight: "800",
+    letterSpacing: "1px",
+    textTransform: "uppercase" as const,
+    textAlign: "center" as const,
+    textDecoration: "none",
+  },
+
+  optionHelper: {
+    margin: "10px 0 0",
     color: "#789590",
-    fontSize: "14px",
-    lineHeight: "23px",
+    fontSize: "10px",
+    lineHeight: "15px",
+  },
+
+  faqCard: {
+    margin: "0 0 12px",
+    padding: "18px",
+    borderRadius: "10px",
+    backgroundColor: "#ffffff",
+  },
+
+  faqTitle: {
+    margin: "0 0 8px",
+    color: "#164742",
+    fontSize: "15px",
+    lineHeight: "21px",
+    fontWeight: "700",
+  },
+
+  faqBody: {
+    margin: "0 0 12px",
+    color: "#315f58",
+    fontSize: "12px",
+    lineHeight: "19px",
   },
 
   textLink: {
-    color: "#08a99a",
-    fontSize: "15px",
+    color: "#00a99a",
+    fontSize: "11px",
+    lineHeight: "16px",
     fontWeight: "800",
+    letterSpacing: "0.8px",
+    textTransform: "uppercase" as const,
+    textDecoration: "none",
+  },
+
+  discordSection: {
+    margin: "44px 0",
+    textAlign: "center" as const,
+  },
+
+  discordText: {
+    margin: "0",
+    color: "#164742",
+    fontSize: "15px",
+    lineHeight: "23px",
+  },
+
+  discordLink: {
+    color: "#00a99a",
+    fontWeight: "700",
     textDecoration: "underline",
   },
 
+  socialSection: {
+    margin: "0 0 18px",
+  },
+
+  socialLink: {
+    marginRight: "24px",
+    color: "#164742",
+    fontSize: "12px",
+    lineHeight: "18px",
+    textDecoration: "none",
+  },
+
   hr: {
-    margin: "28px 0",
-    borderColor: "#dbe9e6",
+    margin: "20px 0 18px",
+    borderColor: "#c8d8d5",
   },
 
   footer: {
     margin: "0",
-    color: "#315f58",
-    fontSize: "15px",
-    lineHeight: "24px",
+    color: "#789590",
+    fontSize: "11px",
+    lineHeight: "17px",
   },
 };
