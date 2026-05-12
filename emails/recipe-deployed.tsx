@@ -81,7 +81,7 @@ export default function RecipeDeployedEmail() {
     <Html>
       <Head>
         <style>{`
-          @media only screen and (max-width: 600px) {
+          @media only screen and (max-width: 480px) {
             .container {
               width: 100% !important;
               max-width: 100% !important;
@@ -133,8 +133,7 @@ export default function RecipeDeployedEmail() {
       </Head>
 
       <Preview>
-        Your services are running. Open the guide and choose how you want to
-        continue.
+        Your Zerops recipe is live. Open the guide and choose your next step.
       </Preview>
 
       <Body style={styles.body}>
@@ -167,8 +166,8 @@ export default function RecipeDeployedEmail() {
             <Heading style={styles.h2}>What’s next?</Heading>
 
             <Text style={styles.paragraph}>
-              Choose how you want to continue. Both paths will take you back to
-              the recipes guide.
+              Choose how you want to continue. The guide will help you pick the
+              right next step.
             </Text>
 
             <Row>
@@ -255,12 +254,14 @@ export default function RecipeDeployedEmail() {
             <Heading style={styles.h2}>Need help?</Heading>
 
             <Section style={styles.faqCard}>
-              <Text style={styles.faqTitle}>Where should I continue?</Text>
+              <Text style={styles.faqTitle}>
+                Not sure which path to choose?
+              </Text>
 
               <Text style={styles.faqBody}>
-                Open the recipes page and follow the path that matches what you
-                want to do next: use the deployed setup as a template or
-                integrate your existing application.
+                If you want to build from the deployed setup, start with the
+                template path. If you already have an app, follow the integration
+                path.
               </Text>
 
               <Link href={recipesUrl} style={styles.textLink}>
